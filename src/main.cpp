@@ -22,7 +22,7 @@ const int PushButton0 = 36;
 const int Led0 = 2;
 
 
-const char* logFileName="/WLog.txt";
+const char* logFileName="/WLog.csv";
 
 //********************************************************************************
 //* Name : blinkLed
@@ -123,6 +123,7 @@ void loop()
     // Loop forever
     while(1)
     {
+
         // Check for pushbutton
         if (digitalRead(PushButton0) == LOW )
         { 
@@ -181,7 +182,7 @@ void loop()
             myw.getWeatherData();
             
             // make the weather string
-            sprintf(weatherBuf, "%20S, %20s,  %6s Deg,  %5s Mph,  %5s\r\n", myntp.txtTime, myw.cWeather, myw.cHot, myw.cWindSpd, myw.cWindDir);
+            sprintf(weatherBuf, "%20S,%20s,%15s,%10s,%10s\r\n", myntp.txtTime, myw.cWeather, myw.cHot, myw.cWindSpd, myw.cWindDir);
 
             // Append the weather to the file
             mysd.appendFile(SD, logFileName, weatherBuf);
