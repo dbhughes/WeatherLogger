@@ -19,6 +19,7 @@ char txtBuf[250];
 
 // Assign names to Pushbutton pins
 const int PushButton0 = 36;
+const int PushButton1 = 0;
 const int Led0 = 2;
 
 
@@ -58,6 +59,7 @@ void setup()
 
     // Set the pin mode for the pushbutton
     pinMode(PushButton0, INPUT_PULLUP);
+    pinMode(PushButton1, INPUT);
     pinMode(Led0, OUTPUT);
 
     // Turn led0 off
@@ -69,6 +71,10 @@ void setup()
     // Use object method to connect to WAP
     Serial.println("Scanning WAPS to connct to one.");       
     Wap.ScanWapsAndConnect();
+
+    // Print ESP Local IP Address
+    Serial.println(WiFi.localIP());
+
 
     // Configure RTC settings
     configTime(myntp.gmtOffset_sec, myntp.daylightOffset_sec, myntp.ntpServer);
@@ -86,19 +92,18 @@ void setup()
     mysd.mountSd("V");
 
     uint64_t cardSize = SD.cardSize() / (1024 * 1024);
-    Serial.printf("SD Card Size: %lluMB\n", cardSize);
+    Serial.printf("SD Card Size: %lluMB\n", cardSize);    
+    Serial.printf("Free space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
+    Serial.printf("Used space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
     
 
     if (!mysd.fileExists(SD, logFileName))
     {
         mysd.writeFile(SD, logFileName, "");
     }
-    
 
     mysd.readFile(SD, logFileName);
 
-    Serial.printf("Free space: %lluMB\n", SD.totalBytes() / (1024 * 1024));
-    Serial.printf("Used space: %lluMB\n", SD.usedBytes() / (1024 * 1024));
 }
 
 //********************************************************************************
@@ -120,14 +125,23 @@ void loop()
     unsigned long LedOffMillis;
 
     // Setup millis weather timeout for 5 minutes
-    LedOnMillis = millis() +  1000;
-    LedOffMillis = millis() + 1250;
+    WeatherDelayMillis = millis();
+    LedOnMillis = millis() +  1000;    LedOffMillis = LedOnMillis + 150;
+
 
     // Loop forever
     while(1)
     {
+        // Check for pushbutton 0 to read file
+        if (digitalRead(PushButton1) == LOW )
+        {
+            Serial.println("\n-----------------------------------------------------------");
+            mysd.readFile(SD, logFileName);
+            Serial.println("End of file.\n");
+        }
 
-        // Check for pushbutton
+
+        // Check for pushbutton 0
         if (digitalRead(PushButton0) == LOW )
         { 
             // Turn led0 on
@@ -198,8 +212,7 @@ void loop()
 
         if (millis() > LedOffMillis)
         {
-            LedOnMillis = millis() + 1000;
-            LedOffMillis = millis() + 1250;
+            LedOnMillis = millis() +  1000;    LedOffMillis = LedOnMillis + 150;
             digitalWrite(Led0, LOW);    
         }
 
