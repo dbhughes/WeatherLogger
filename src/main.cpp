@@ -116,9 +116,12 @@ void loop()
     // Weather Check Delay time
     unsigned long WeatherDelayMillis;
     unsigned long WeatherMinutesInterval = 5 * 60 * 1000;  // 5 minutes
+    unsigned long LedOnMillis;
+    unsigned long LedOffMillis;
 
     // Setup millis weather timeout for 5 minutes
-    WeatherDelayMillis = millis() + (WeatherMinutesInterval);
+    LedOnMillis = millis() +  1000;
+    LedOffMillis = millis() + 1250;
 
     // Loop forever
     while(1)
@@ -188,6 +191,19 @@ void loop()
             mysd.appendFile(SD, logFileName, weatherBuf);
         }
 
-  }
+        if (millis() > LedOnMillis)
+        {
+            digitalWrite(Led0, HIGH);    
+        }
 
+        if (millis() > LedOffMillis)
+        {
+            LedOnMillis = millis() + 1000;
+            LedOffMillis = millis() + 1250;
+            digitalWrite(Led0, LOW);    
+        }
+
+
+
+  }
 }
