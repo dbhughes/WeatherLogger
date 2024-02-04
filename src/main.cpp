@@ -17,9 +17,11 @@ MyNtp myntp;
 
 char txtBuf[250];
 
-// Assign names to Pushbutton pins
+// Assign names to digital inputs Pushbutton pins
 const int PushButton0 = 36;
 const int PushButton1 = 0;
+
+// Assign names to digital outputs leds pins
 const int Led0 = 2;
 
 
